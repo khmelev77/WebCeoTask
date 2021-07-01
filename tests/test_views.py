@@ -1,14 +1,9 @@
 from django.test import TestCase
-from shop.models import Seller, Product, Sale
+from django.shortcuts import reverse
 
 class ProductsListViewTest(TestCase):
+    fixtures = ['fixtures/seller.json', 'fixtures/product.json', 'fixtures/sale.json']
 
-    @classmethod
-    def setUpTestData(cls):
-        seller = Seller.objects.create(name='Mike')
-        product = Product.objects.create(title='Product title 1', description='Product description 1', price=34.99, quantity=20, seller=seller)
-        Sale.objects.create(seller=seller, product=product, quantity_sold=10)
-
-    def test_view_url_exists_at_desired_location(self):
-        resp = self.client.get('/')
-        self.assertEqual(resp.status_code, 200)
+    def test_product_exists_on_page(self):
+        resp = self.client.get(reverse('product_list'))
+        self.assertTrue('Product title 1' in [el['title'] for el in resp.context['products'].values()])
