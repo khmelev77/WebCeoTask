@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from annoying.decorators import render_to
+from django.views.generic import TemplateView
 from .models import Product
 
-@render_to('shop/product_list.html')
-def product_list(request):
-    products = Product.objects.all()
-    return {'products': products}
+class ProductList(TemplateView):
+    template_name = "shop/product_list.html"
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.all()
+        return render(request, self.template_name, {'products': products})
