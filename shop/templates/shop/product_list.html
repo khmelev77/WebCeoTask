@@ -16,7 +16,9 @@
                             <!-- Product name-->
                             <h5 class="fw-bolder">{{ product.title }}</h5>
                             <!-- Product price-->
-                            ${{ product.price }}
+                            {{ product.price }} грн. / 1шт.
+                            <br>
+                            Всего товара на складе: {{ product.amount }}
                         </div>
                     </div>
                     <!-- Product actions-->
