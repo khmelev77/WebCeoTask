@@ -1,0 +1,9 @@
+[
+{
+    "model": "shop.seller",
+    "pk": 1,
+    "fields": {
+        "name": "Mike"
+    }
+}
+]

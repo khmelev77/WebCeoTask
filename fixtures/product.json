@@ -1,0 +1,13 @@
+[
+{
+    "model": "shop.product",
+    "pk": 1,
+    "fields": {
+        "title": "Product title 1",
+        "description": "Product description 1",
+        "price": "34.99",
+        "quantity": 20,
+        "seller": 1
+    }
+}
+]

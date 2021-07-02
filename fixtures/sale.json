@@ -1,0 +1,12 @@
+[
+{
+    "model": "shop.sale",
+    "pk": 1,
+    "fields": {
+        "date_of_sale": "2021-07-01T17:09:01.806Z",
+        "seller": 1,
+        "product": 1,
+        "quantity_sold": 10
+    }
+}
+]
