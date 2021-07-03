@@ -20,3 +20,4 @@ class Sale(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount_sold = models.PositiveIntegerField()
+    purchase_amount = models.PositiveIntegerField()
