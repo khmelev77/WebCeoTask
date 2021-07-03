@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from .models import Product, Seller, Sale
+from .models import Product, Seller, Sale, ProductPriceChange
 from .forms import SaleForm
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -55,6 +55,18 @@ class SalesList(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         sales = Sale.objects.order_by('date_of_sale')
+        p = Paginator(sales, 5)
+        page_number = request.GET.get('page')
+        p_obj = p.get_page(page_number)
+        return render(request, self.template_name, {'page_obj': p_obj})
+
+
+class PriceChangelog(LoginRequiredMixin, TemplateView):
+    template_name = "shop/price_changelog.html"
+
+    def get(self, request, *args, **kwargs):
+        product_id = kwargs['product_id']
+        sales = ProductPriceChange.objects.filter(product__id=product_id).order_by('date_of_change')
         p = Paginator(sales, 5)
         page_number = request.GET.get('page')
         p_obj = p.get_page(page_number)

@@ -1,6 +1,7 @@
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Seller(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -21,3 +22,12 @@ class Sale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount_sold = models.PositiveIntegerField()
     purchase_amount = models.PositiveIntegerField()
+
+class ProductPriceChange(models.Model):
+    date_of_change = models.DateTimeField(default=timezone.now)
+    new_price = models.PositiveIntegerField()
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+@receiver(post_save, sender=Product)
+def save_product_price_change(sender, instance, **kwargs):
+    ProductPriceChange.objects.create(new_price=instance.price, product=instance)
