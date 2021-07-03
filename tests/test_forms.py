@@ -7,7 +7,7 @@ from django.utils import timezone
 from shop.forms import SaleForm
 from shop.models import Sale, Product, Seller
 
-class RenewBookFormTest(TestCase):
+class FormTest(TestCase):
     fixtures = ['fixtures/seller.json', 'fixtures/product.json', 'fixtures/sale.json']
 
     def test_create_new_sale_in_form(self):
