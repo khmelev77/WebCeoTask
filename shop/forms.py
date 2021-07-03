@@ -35,6 +35,7 @@ class SaleForm(forms.Form):
             )
 
     def __init__(self, *args, **kwargs):
+        # Устанавливаем в форме продавцов, которые были переданны и максимальное кол-во товара, которое можно выбрать в форме.
         qs = kwargs.pop('sellers_qs')
         max_amount = kwargs.pop('max_amount')
         super(SaleForm, self).__init__(*args, **kwargs)

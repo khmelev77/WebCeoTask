@@ -24,6 +24,8 @@ class ProductDetail(TemplateView):
 
         if not product or not sellers_qs: return redirect('product_list')
 
+        # Передаем в __init__() формы queryset, который содержит продавцов соответствующего товара и также передаем максимальное кол-во данного товара.
+
         form = SaleForm(initial={'amount': 1, 'product_id': product.pk},
                         sellers_qs=sellers_qs,
                         max_amount=product.amount)
@@ -39,7 +41,7 @@ class ProductDetail(TemplateView):
 
         if form.is_valid():
             seller = form.cleaned_data['sellers']
-
+            # Отбавляем купленное количество товара
             product.amount -= form.cleaned_data['amount']
             product.save()
 

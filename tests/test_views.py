@@ -4,10 +4,13 @@ from shop.models import ProductPriceChange, Product
 import random
 
 
-class ProductsListViewTest(TestCase):
+class ProductTest(TestCase):
+    """
+    Проверка того, что цена товара изменяется благополучно и создается запись в "журнале изменений".
+    """
     fixtures = ["fixtures/seller.json", "fixtures/product.json", "fixtures/sale.json"]
 
-    def test_product_exists_on_page(self):
+    def test_product_price_change(self):
         new_price = random.randint(1, 9999)
         p = Product.objects.get(pk=3)
         p.price = new_price
