@@ -1,6 +1,7 @@
 from django import forms
 from .models import Product, Seller
 
+
 class SaleForm(forms.Form):
     amount = forms.IntegerField(label='Кол-во', min_value=1)
     product_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -40,5 +41,3 @@ class SaleForm(forms.Form):
         self.fields['sellers'].queryset = qs
         self.fields['amount'].max_value = max_amount
         self.fields['amount'].widget.attrs['max'] = max_amount
-
-

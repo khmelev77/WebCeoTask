@@ -7,6 +7,7 @@ from django.utils import timezone
 from shop.forms import SaleForm
 from shop.models import Sale, Product, Seller
 
+
 class FormTest(TestCase):
     fixtures = ['fixtures/seller.json', 'fixtures/product.json', 'fixtures/sale.json']
 

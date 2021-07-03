@@ -6,39 +6,33 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-
-        {% if form.errors %}
-          <p>Your username and password didn't match. Please try again.</p>
-        {% endif %}
-
-        {% if next %}
-          {% if user.is_authenticated %}
+            {% if form.errors %}
+            <p>Your username and password didn't match. Please try again.</p>
+            {% endif %}
+            {% if next %}
+            {% if user.is_authenticated %}
             <p>Your account doesn't have access to this page. To proceed,
-            please login with an account that has access.</p>
-          {% else %}
+                please login with an account that has access.
+            </p>
+            {% else %}
             <p>Please login to see this page.</p>
-          {% endif %}
-        {% endif %}
-
-        <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <table>
-
-        <tr>
-          <td>{{ form.username.label_tag }}</td>
-          <td>{{ form.username }}</td>
-        </tr>
-
-        <tr>
-          <td>{{ form.password.label_tag }}</td>
-          <td>{{ form.password }}</td>
-        </tr>
-        </table>
-
-        <input type="submit" value="login" />
-        <input type="hidden" name="next" value="{{ next }}" />
-        </form>
-
+            {% endif %}
+            {% endif %}
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td>{{ form.username.label_tag }}</td>
+                        <td>{{ form.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.password.label_tag }}</td>
+                        <td>{{ form.password }}</td>
+                    </tr>
+                </table>
+                <input type="submit" value="login" />
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
         </div>
     </div>
 </section>

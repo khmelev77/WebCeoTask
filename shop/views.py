@@ -43,7 +43,8 @@ class ProductDetail(TemplateView):
             product.amount -= form.cleaned_data['amount']
             product.save()
 
-            Sale.objects.create(seller=seller, product=product, amount_sold=form.cleaned_data['amount'], purchase_amount=product.price * form.cleaned_data['amount'])
+            Sale.objects.create(seller=seller, product=product, amount_sold=form.cleaned_data['amount'],
+                                purchase_amount=product.price * form.cleaned_data['amount'])
 
             return redirect('product_list')
 
