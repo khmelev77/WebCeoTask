@@ -42,10 +42,10 @@ class ProductDetail(FormView):
         return super(ProductDetail, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        kwargs = super(ProductDetail, self).get_form_kwargs()
-        kwargs['sellers_qs'] = self.kwargs['sellers_qs']
-        kwargs['max_amount'] = self.kwargs['product'].amount
-        return kwargs
+        form_kwargs = super(ProductDetail, self).get_form_kwargs()
+        form_kwargs['sellers_qs'] = self.kwargs['sellers_qs']
+        form_kwargs['max_amount'] = self.kwargs['product'].amount
+        return form_kwargs
 
     def form_valid(self, form):
         product = self.check_product_exist(self.request, form.cleaned_data['product_id'])
