@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 <!-- Section-->
 <section class="py-5">
-    <div class="text-center"><a class="nav-link text-info" aria-current="page" href="{% url 'product_list' %}">На главную</a></div>
+    <div class="text-center"><a class="nav-link text-muted" aria-current="page" href="{% url 'product_list' %}">На главную</a></div>
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <div class="col mb-5">
@@ -32,7 +33,8 @@
                             {% if product.amount %}
                             <form action="" method="post">
                                 {% csrf_token %}
-                                {{ form }}
+                                {# Тег crispy делает внешний вид формы немного красивее. (Если его убрать, очистить кеш, то можно заметить разницу). #}
+                                {{ form|crispy }}
                                 <br>
                                 <input type="submit" class="btn btn-primary" value="Оплатить">
                             </form>
