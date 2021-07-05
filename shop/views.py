@@ -5,60 +5,86 @@ from .forms import SaleForm
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, FormView
 from django.urls import reverse_lazy
+from django.contrib import messages
 
 class ProductList(TemplateView):
     template_name = "shop/product_list.html"
 
-    def get(self, request, *args, **kwargs):
-        products = Product.objects.all()
-        return render(request, self.template_name, {'products': products})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.all()
+        return context
 
 
-class ProductDetail(TemplateView):
+class ProductDetail(FormView):
+    form_class = SaleForm
     template_name = "shop/product_detail.html"
+    success_url = reverse_lazy('product_list')
 
-    def get(self, request, *args, **kwargs):
-        product = Product.objects.filter(pk=kwargs['product_id'])[0]
-        sellers_qs = Seller.objects.filter(product=product.pk)
+    def get_initial(self):
+        initial = super(ProductDetail, self).get_initial()
+        if self.request.user.is_authenticated:
+            initial.update({'amount': 1, 'product_id': self.kwargs['product_id']})
+        return initial
 
-        if not product or not sellers_qs: return redirect('product_list')
+    def get_form_kwargs(self):
+        product = self.check_product_exist(self.request, self.kwargs['product_id'])
+        if not product: return redirect('product_list')
+        sellers_qs = self.check_seller_exist(self.request, product)
+        if not sellers_qs: return redirect('product_list')
 
-        # Передаем в __init__() формы queryset, который содержит продавцов соответствующего товара и также передаем максимальное кол-во данного товара.
+        kwargs = super(ProductDetail, self).get_form_kwargs()
+        kwargs['sellers_qs'] = sellers_qs
+        kwargs['max_amount'] = product.amount
+        return kwargs
 
-        form = SaleForm(initial={'amount': 1, 'product_id': product.pk},
-                        sellers_qs=sellers_qs,
-                        max_amount=product.amount)
-        return render(request, self.template_name, {'product': product, 'form': form})
+    def form_valid(self, form):
+        product = self.check_product_exist(self.request, form.cleaned_data['product_id'])
+        if not product: return redirect('product_list')
 
-    def post(self, request, *args, **kwargs):
-        product = Product.objects.filter(pk=kwargs['product_id'])[0]
-        sellers_qs = Seller.objects.filter(product=product.pk)
-
-        if not product or not sellers_qs: return redirect('product_list')
-
-        form = SaleForm(request.POST, sellers_qs=sellers_qs, max_amount=product.amount)
-
-        if form.is_valid():
-            seller = form.cleaned_data['sellers']
-            # Отбавляем купленное количество товара
+        if product.amount >= form.cleaned_data['amount']:
             product.amount -= form.cleaned_data['amount']
             product.save()
-
-            Sale.objects.create(seller=seller, product=product, amount_sold=form.cleaned_data['amount'],
-                                purchase_amount=product.price * form.cleaned_data['amount'])
-
+        else:
+            messages.add_message(self.request, messages.ERROR, 'Товара на складе оказалось недостаточно, возможно кто-то его уже купил.')
             return redirect('product_list')
 
-        return render(request, self.template_name, {'product': product, 'form': form})
+        Sale.objects.create(seller=form.cleaned_data['sellers'], product=product, amount_sold=form.cleaned_data['amount'], purchase_amount=product.price * form.cleaned_data['amount'])
 
+        return super(ProductDetail, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        product = self.check_product_exist(self.request, self.kwargs['product_id'])
+        if not product: return redirect('product_list')
+
+        context = super().get_context_data(**kwargs)
+        context["product"] = product
+        return context
+
+
+    def check_product_exist(self, request, product_id):
+        try:
+            product = Product.objects.filter(pk=product_id)[0]
+            return product
+        except IndexError:
+            messages.add_message(request, messages.ERROR, 'Нужный товар не был найден, возможно он был удален.')
+            return None
+
+    def check_seller_exist(self, request, product):
+        try:
+            sellers_qs = Seller.objects.filter(product=product.pk)
+            return sellers_qs
+        except IndexError:
+            messages.add_message(request, messages.ERROR, 'Продавцы для нужного товара не были найдены.')
+            return None
 
 class SalesList(LoginRequiredMixin, TemplateView):
     template_name = "shop/sales_list.html"
 
     def get(self, request, *args, **kwargs):
-        sales = Sale.objects.order_by('date_of_sale')
+        sales = Sale.objects.order_by('-date_of_sale')
         p = Paginator(sales, 5)
         page_number = request.GET.get('page')
         p_obj = p.get_page(page_number)
@@ -69,8 +95,9 @@ class PriceChangelog(LoginRequiredMixin, TemplateView):
     template_name = "shop/price_changelog.html"
 
     def get(self, request, *args, **kwargs):
-        product_id = kwargs['product_id']
+        product_id = kwargs.pop('product_id')
         sales = ProductPriceChange.objects.filter(product__id=product_id).order_by('date_of_change')
+
         p = Paginator(sales, 5)
         page_number = request.GET.get('page')
         p_obj = p.get_page(page_number)
