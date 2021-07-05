@@ -29,11 +29,18 @@ class ProductDetail(FormView):
             initial.update({'amount': 1, 'product_id': self.kwargs['product_id']})
         return initial
 
-    def get_form_kwargs(self):
+    def dispatch(self, request, *args, **kwargs):
         product = self.check_product_exist(self.request, self.kwargs['product_id'])
         if not product: return redirect('product_list')
+
         sellers_qs = self.check_seller_exist(self.request, product)
         if not sellers_qs: return redirect('product_list')
+
+        return super(ProductDetail, self).dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        product = self.check_product_exist(self.request, self.kwargs['product_id'])
+        sellers_qs = self.check_seller_exist(self.request, product)
 
         kwargs = super(ProductDetail, self).get_form_kwargs()
         kwargs['sellers_qs'] = sellers_qs
@@ -57,7 +64,6 @@ class ProductDetail(FormView):
 
     def get_context_data(self, **kwargs):
         product = self.check_product_exist(self.request, self.kwargs['product_id'])
-        if not product: return redirect('product_list')
 
         context = super().get_context_data(**kwargs)
         context["product"] = product

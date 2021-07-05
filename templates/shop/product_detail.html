@@ -30,16 +30,18 @@
                             <p>{{ product.description }}</p>
                         </div>
                         <div class="text-center">
-                            {% if product.amount %}
-                            <form action="" method="post">
-                                {% csrf_token %}
-                                {# Тег crispy делает внешний вид формы немного красивее. (Если его убрать, очистить кеш, то можно заметить разницу). #}
-                                {{ form|crispy }}
-                                <br>
-                                <input type="submit" class="btn btn-primary" value="Оплатить">
-                            </form>
-                            {% else %}
-                            <p class="text-warning">Весь товар распродан! Покупка недоступна.</p>
+                            {% if product %}
+                                {% if product.amount %}
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    {# Тег crispy делает внешний вид формы немного красивее. (Если его убрать, очистить кеш, то можно заметить разницу). #}
+                                    {{ form|crispy }}
+                                    <br>
+                                    <input type="submit" class="btn btn-primary" value="Оплатить">
+                                </form>
+                                {% else %}
+                                <p class="text-warning">Весь товар распродан! Покупка недоступна.</p>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
