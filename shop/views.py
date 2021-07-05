@@ -79,12 +79,11 @@ class ProductDetail(FormView):
             return None
 
     def check_seller_exist(self, request, product):
-        try:
-            sellers_qs = Seller.objects.filter(product=product.pk)
-            return sellers_qs
-        except IndexError:
-            messages.add_message(request, messages.ERROR, 'Продавцы для нужного товара не были найдены.')
-            return None
+        sellers_qs = Seller.objects.filter(product=product.pk)
+        if sellers_qs: return sellers_qs
+
+        messages.add_message(request, messages.ERROR, 'Продавцы для данной позиции отсутствуют в базе данных.')
+        return None
 
 class SalesList(LoginRequiredMixin, TemplateView):
     template_name = "shop/sales_list.html"
