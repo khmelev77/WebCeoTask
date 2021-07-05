@@ -6,7 +6,8 @@ import random
 
 class ProductTest(TestCase):
     """
-    Проверка того, что цена товара изменяется благополучно и создается запись в "журнале изменений".
+    - Проверка того, что цена товара изменяется благополучно и создается запись в "журнале изменений".
+    - Проверка того, что страница '/' возвращает 200 код.
     """
     fixtures = ["fixtures/seller.json", "fixtures/product.json", "fixtures/sale.json"]
 
@@ -19,3 +20,7 @@ class ProductTest(TestCase):
             "-date_of_change"
         )[0]
         self.assertEqual(new_price, prod_price_change_obj.new_price)
+
+    def test_view_url_exists_at_desired_location(self):
+        resp = self.client.get('/')
+        self.assertEqual(resp.status_code, 200)
