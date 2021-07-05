@@ -8,11 +8,12 @@ class Seller(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return u'{0}'.format(self.name)
+        return self.name
 
 
 class Product(models.Model):
     title = models.CharField(max_length=100, unique=True)
+    photo = models.ImageField(upload_to='products')
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     amount = models.PositiveIntegerField()

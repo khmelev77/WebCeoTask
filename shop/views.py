@@ -5,7 +5,8 @@ from .forms import SaleForm
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.urls import reverse_lazy
 
 class ProductList(TemplateView):
     template_name = "shop/product_list.html"
@@ -74,3 +75,10 @@ class PriceChangelog(LoginRequiredMixin, TemplateView):
         page_number = request.GET.get('page')
         p_obj = p.get_page(page_number)
         return render(request, self.template_name, {'page_obj': p_obj})
+
+
+class ProductCreate(CreateView):
+    success_url = reverse_lazy('product_list')
+    template_name = 'shop/product_create.html'
+    model = Product
+    fields = ['title', 'description', 'price', 'amount', 'sellers', 'photo']
