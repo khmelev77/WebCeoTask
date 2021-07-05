@@ -36,15 +36,15 @@ class ProductDetail(FormView):
         sellers_qs = self.check_seller_exist(self.request, product)
         if not sellers_qs: return redirect('product_list')
 
+        self.kwargs['product'] = product
+        self.kwargs['sellers_qs'] = sellers_qs
+
         return super(ProductDetail, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        product = self.check_product_exist(self.request, self.kwargs['product_id'])
-        sellers_qs = self.check_seller_exist(self.request, product)
-
         kwargs = super(ProductDetail, self).get_form_kwargs()
-        kwargs['sellers_qs'] = sellers_qs
-        kwargs['max_amount'] = product.amount
+        kwargs['sellers_qs'] = self.kwargs['sellers_qs']
+        kwargs['max_amount'] = self.kwargs['product'].amount
         return kwargs
 
     def form_valid(self, form):
