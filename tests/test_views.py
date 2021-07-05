@@ -13,7 +13,7 @@ class ProductTest(TestCase):
 
     def test_product_price_change(self):
         new_price = random.randint(1, 9999)
-        p = Product.objects.get(pk=3)
+        p = Product.objects.get(pk=9)
         p.price = new_price
         p.save()
         prod_price_change_obj = ProductPriceChange.objects.filter(product=p).order_by(
