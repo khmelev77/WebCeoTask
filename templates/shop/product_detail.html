@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
 {% block content %}
 <!-- Section-->
 <section class="py-5">
@@ -33,7 +32,7 @@
                             {% if product.amount %}
                             <form action="" method="post">
                                 {% csrf_token %}
-                                {{ form|crispy }}
+                                {{ form }}
                                 <br>
                                 <input type="submit" class="btn btn-primary" value="Оплатить">
                             </form>
