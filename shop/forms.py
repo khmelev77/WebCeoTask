@@ -1,11 +1,17 @@
 from django import forms
-from .models import Product, Seller
-
+from .models import Product, Seller, Sale
 
 class SaleForm(forms.Form):
     amount = forms.IntegerField(label='Кол-во', min_value=1)
     product_id = forms.IntegerField(widget=forms.HiddenInput())
     sellers = forms.ModelChoiceField(label='Продавцы', queryset=Seller.objects.none())
+
+    def save(self):
+        data = self.cleaned_data
+        product = Product.objects.get(pk=data['product_id'])
+        product.amount -= data['amount']
+        product.save()
+        Sale.objects.create(seller=data['sellers'], product=product, amount_sold=data['amount'], purchase_amount=product.price * data['amount'])
 
     def clean(self):
         cleaned_data = super().clean()
@@ -15,15 +21,16 @@ class SaleForm(forms.Form):
 
         if amount < 1:
             raise forms.ValidationError(
-                "Неверное количесто товара."
+                "Указано неверное количесто товара."
             )
-        if Product.objects.get(pk=product_id).amount < amount:
-            raise forms.ValidationError(
-                "На складе нет столько единиц товара."
-            )
+
         if not Product.objects.filter(pk=product_id):
             raise forms.ValidationError(
                 "Товар не найден в базе данных."
+            )
+        if Product.objects.get(pk=product_id).amount < amount:
+            raise forms.ValidationError(
+                "На складе нет столько единиц товара, выберите другое количество."
             )
         if not Seller.objects.filter(name=seller):
             raise forms.ValidationError(

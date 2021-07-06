@@ -3,11 +3,19 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <!-- Section-->
+{% if form.errors %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
 <section class="py-5">
     <div class="text-center"><a class="nav-link text-muted" aria-current="page" href="{% url 'product_list' %}">На главную</a></div>
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <div class="col mb-5">
+                {% if product %}
                 <div class="card h-100">
                     <!-- Product image-->
                     <img class="card-img-top" src="{{ product.photo.url }}" alt="..." />
@@ -30,7 +38,6 @@
                             <p>{{ product.description }}</p>
                         </div>
                         <div class="text-center">
-                            {% if product %}
                                 {% if product.amount %}
                                 <form action="" method="post">
                                     {% csrf_token %}
@@ -42,10 +49,12 @@
                                 {% else %}
                                 <p class="text-warning">Весь товар распродан! Покупка недоступна.</p>
                                 {% endif %}
-                            {% endif %}
                         </div>
                     </div>
                 </div>
+                {% else %}
+                    Товар не был найден в базе данных.
+                {% endif %}
             </div>
         </div>
     </div>
