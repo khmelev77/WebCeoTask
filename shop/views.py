@@ -55,7 +55,11 @@ class ProductDetail(FormView):
         product = check_product_exist(form.cleaned_data['product_id'])
 
         if not product:
-            form.add_error('amount', 'Нужный товар не был найден, возможно он был удален.')
+            form.add_error(None, 'Нужный товар не был найден, возможно он был удален.')
+            return super(ProductDetail, self).form_invalid(form)
+
+        if product.amount < form.cleaned_data['amount']:
+            form.add_error('amount', 'Товар в нужном кол-ве отсутсвтует на складе.')
             return super(ProductDetail, self).form_invalid(form)
 
         form.save()
@@ -68,21 +72,6 @@ class ProductDetail(FormView):
         context["product"] = product
         return context
 
-
-    def check_product_exist(self, request, product_id):
-        try:
-            product = Product.objects.filter(pk=product_id)[0]
-            return product
-        except IndexError:
-            messages.add_message(request, messages.ERROR, 'Нужный товар не был найден, возможно он был удален.')
-            return None
-
-    def check_seller_exist(self, request, product):
-        sellers_qs = Seller.objects.filter(product=product.pk)
-        if sellers_qs: return sellers_qs
-
-        messages.add_message(request, messages.ERROR, 'Продавцы для данной позиции отсутствуют в базе данных.')
-        return None
 
 class SalesList(LoginRequiredMixin, TemplateView):
     template_name = "shop/sales_list.html"

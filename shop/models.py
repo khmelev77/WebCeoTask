@@ -36,4 +36,5 @@ class ProductPriceChange(models.Model):
 
 @receiver(post_save, sender=Product)
 def save_product_price_change(sender, instance, **kwargs):
+    print("HEY")
     ProductPriceChange.objects.create(new_price=instance.price, product=instance)
