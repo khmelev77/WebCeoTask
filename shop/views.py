@@ -52,7 +52,7 @@ class ProductDetail(FormView):
         return form_kwargs
 
     def form_valid(self, form):
-        product = check_product_exist(form.cleaned_data['product_id'])
+        product = self.kwargs['product']
 
         if not product:
             form.add_error(None, 'Нужный товар не был найден, возможно он был удален.')
@@ -66,7 +66,7 @@ class ProductDetail(FormView):
         return super(ProductDetail, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        product = check_product_exist(self.kwargs['product_id'])
+        product = self.kwargs['product']
         # Если и вернется None, то в шаблоне отобразиться надпись, что товар не был найден в базе данных.
         context = super().get_context_data(**kwargs)
         context["product"] = product
